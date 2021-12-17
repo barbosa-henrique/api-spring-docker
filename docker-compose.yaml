@@ -1,0 +1,24 @@
+version: '3'
+services:
+  api_spring_docker:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    image: api_spring_docker/api
+    ports:
+      - '8080:8080'
+      - '5005:5005'
+    environment:
+      - ADDITIONAL_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xmx1G -Xms128m -XX:MaxMetaspaceSize=128m
+      - PROFILE=dev
+    links:
+      - db
+  db:
+    image: postgres:13
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=spring_boot
+    volumes:
+      - ./docker/volume_postgres:/var/lib/postgres
